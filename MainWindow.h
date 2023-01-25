@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -31,6 +31,7 @@ private:
     bool bUserStop = false;
     QFileInfo fiSrc;
     QString sIniPath;
+    bool CheckFileSize(const QFileInfo &fiSrc);
     void UpdateProgress(int lineNum, float percentage);
 
     QString sBakSuffixName;
