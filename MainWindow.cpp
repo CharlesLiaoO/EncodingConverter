@@ -36,7 +36,8 @@ MainWindow::MainWindow(QWidget *parent)
     encodingList<< "UTF-32BE";
     encodingList<< "UTF-32LE";
 
-    encodingList<< "GB18030";
+    encodingList<< tr("系统（Windows为ANSI）");
+//    encodingList<< "GB18030";
 
     ui->comboBox_EncodingDest->addItems(encodingList);
     ui->comboBox_EncodingSrc->addItems(encodingList);
@@ -90,6 +91,7 @@ QFileInfoList GetAllFileRecursively(const QFileInfo &fi, const QStringList &name
 QString DetectEncoding(QFile &fileSrc)
 {
     QString sEncoding;
+
     //读取4字节用于判断bom
     QByteArray buffer = fileSrc.read(4);
     quint8 buf1st, buf2nd, buf3rd, buf4th;
@@ -126,7 +128,7 @@ QString DetectEncoding(QFile &fileSrc)
         buffer = fileSrc.readAll();  Q_UNUSED(iMaxFileSize)  //读整个文件判断编码，QByteArray最大容量2GB-1
         tc->toUnicode(buffer.constData(), buffer.size(), &cs);
         if (cs.invalidChars > 0)  //尝试用utf8转换，如果无效字符数大于0，则使用系统编码
-            sEncoding = "";  //空为System（Windows为ASNI），自适应系统和地区本地编码
+            sEncoding = "";  //空为System，适应系统和地区本地编码
         else
             sEncoding = "UTF-8";
     }
