@@ -37,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
     encodingList<< "UTF-32LE";
 
     encodingList<< tr("系统（Windows为ANSI）");
-//    encodingList<< "GB18030";
+
+    encodingList<< "GB18030";
 
     ui->comboBox_EncodingDest->addItems(encodingList);
     ui->comboBox_EncodingSrc->addItems(encodingList);
@@ -93,40 +94,26 @@ QString DetectEncoding(QFile &fileSrc)
     QString sEncoding;
 
     //读取4字节用于判断bom
-    QByteArray buffer = fileSrc.read(4);
-    quint8 buf1st, buf2nd, buf3rd, buf4th;
-    if (buffer.size() >= 2) {
-        buf1st = buffer.at(0);
-        buf2nd = buffer.at(1);
-    } else {
-        buf1st = 0;
-        buf2nd = 0;
-    }
-    if (buffer.size() >= 3)
-        buf3rd = buffer.at(2);
-    else
-        buf3rd = 0;
-    if (buffer.size() >= 3)
-        buf4th = buffer.at(3);
-    else
-        buf4th = 0;
+    QByteArray buf = fileSrc.read(4);
 
-    if (buf1st == 0xEF && buf2nd == 0xBB && buf3rd == 0xBF)
+    if (buf.size() >= 3 && (uchar)buf.at(0) == 0xEF && (uchar)buf.at(1) == 0xBB && (uchar)buf.at(2) == 0xBF)
         sEncoding = "UTF-8 BOM";
-    else if (buf1st == 0xFF && buf2nd == 0xFE)
+    else if (buf.size() >= 2 && (uchar)buf.at(0) == 0xFF && (uchar)buf.at(1) == 0xFE)
         sEncoding = "UTF-16LE";
-    else if (buf1st == 0xFE && buf2nd == 0xFF)
+    else if (buf.size() >= 2 && (uchar)buf.at(0) == 0xFE && (uchar)buf.at(1) == 0xFF)
         sEncoding = "UTF-16BE";
-    else if (buf1st == 0x00 && buf2nd == 0x00 && buf3rd == 0xFF && buf4th == 0xFE)
+    else if (buf.size() >= 4 && (uchar)buf.at(0) == 0x00 && (uchar)buf.at(1) == 0x00
+             && (uchar)buf.at(2) == 0xFF && (uchar)buf.at(3) == 0xFE)
         sEncoding = "UTF-32LE";
-    else if (buf1st == 0x00 && buf2nd == 0x00 && buf3rd == 0xFE && buf4th == 0xFF)
-        sEncoding = "UTF-16BE";
+    else if (buf.size() >= 4 && (uchar)buf.at(0) == 0x00 && (uchar)buf.at(1) == 0x00
+             && (uchar)buf.at(2) == 0xFE && (uchar)buf.at(3) == 0xFF)
+        sEncoding = "UTF-32BE";
     else {
         QTextCodec::ConverterState cs;
         QTextCodec* tc = QTextCodec::codecForName("UTF-8");
         fileSrc.seek(0);
-        buffer = fileSrc.readAll();  Q_UNUSED(iMaxFileSize)  //读整个文件判断编码，QByteArray最大容量2GB-1
-        tc->toUnicode(buffer.constData(), buffer.size(), &cs);
+        buf = fileSrc.readAll();  Q_UNUSED(iMaxFileSize)  //读整个文件判断编码，QByteArray最大容量2GB-1
+        tc->toUnicode(buf.constData(), buf.size(), &cs);
         if (cs.invalidChars > 0)  //尝试用utf8转换，如果无效字符数大于0，则使用系统编码
             sEncoding = "";  //空为System，适应系统和地区本地编码
         else

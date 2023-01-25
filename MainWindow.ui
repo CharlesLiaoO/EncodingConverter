@@ -91,7 +91,7 @@
           <widget class="QComboBox" name="comboBox_EncodingSrc">
            <item>
             <property name="text">
-             <string>自动检测</string>
+             <string>自动检测（支持检测UTF和系统编码）</string>
             </property>
            </item>
           </widget>
