@@ -30,6 +30,10 @@ private:
 
     bool bUserStop = false;
     QFileInfo fiSrc;
+    QString sIniPath;
     void UpdateProgress(int lineNum, float percentage);
+
+    QString sBakSuffixName;
+    QString sTmpSuffixName;
 };
 #endif // MAINWINDOW_H
