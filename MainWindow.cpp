@@ -66,25 +66,21 @@ void MainWindow::on_pushButton_PathSrcBrowse_clicked()
         ui->lineEdit_PathSrc->setText(sDir);
 }
 
-void MainWindow::on_pushButton_PathDestBrowse_clicked()
+QFileInfoList GetFileInfoList(const QFileInfo &dirInfo, const QStringList &nameFilters, bool bRecursively, bool &bStop)
 {
-    QString sPathLast = ui->lineEdit_PathDest->text();
-    QString sDir = QFileDialog::getExistingDirectory(this, tr("选择输入文件夹"), sPathLast);
-    if (!sDir.isEmpty())
-        ui->lineEdit_PathDest->setText(sDir);
-}
+    if (bStop)
+        return QFileInfoList();
 
-QFileInfoList GetAllFileRecursively(const QFileInfo &fi, const QStringList &nameFilters)
-{
-    QFileInfoList fileList;
-    if (fi.isDir()) {
-        QDir dirSrc(fi.filePath());
-        fileList = dirSrc.entryInfoList(nameFilters, QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    QCoreApplication::processEvents();
+
+    QDir dirSrc(dirInfo.filePath());
+    QFileInfoList fileList = dirSrc.entryInfoList(nameFilters, QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    if (bRecursively) {
         QFileInfoList dirList = dirSrc.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-        for (auto &fi: dirList) {
-            fileList << GetAllFileRecursively(fi, nameFilters);
-        }
+        for (auto &fi: dirList)
+            fileList << GetFileInfoList(fi, nameFilters, bRecursively, bStop);
     }
+
     return fileList;
 }
 
@@ -156,7 +152,10 @@ void MainWindow::on_pushButton_Start_clicked()
     if (fiInput.isDir()) {
         QString sSuffixNames = ui->plainTextEdit_SuffixName->toPlainText();
         QStringList nameFilters = sSuffixNames.split(";");
-        fiList = GetAllFileRecursively(fiInput, nameFilters);
+        bool Recursively = ui->checkBox_Recursively->isChecked();
+        if (Recursively)
+            ui->plainTextEdit_Output->appendPlainText(tr("正在递归查找所有文件..."));
+        fiList = GetFileInfoList(fiInput, nameFilters, ui->checkBox_Recursively->isChecked(), bUserStop);
     } else if (fiInput.isFile())
         fiList<< pathSrc;
 
@@ -164,11 +163,11 @@ void MainWindow::on_pushButton_Start_clicked()
     for (int fileIdx = 0; fileIdx < fiList.size() && !bUserStop; fileIdx++) {
         ui->label_FileProgress->setText(QString("%1/%2").arg(fileIdx + 1).arg(fiList.size()));
 
-        fiSrc = fiList.at(fileIdx);
-        if (!CheckFileSize(fiSrc))
+        fiFileSrc = fiList.at(fileIdx);
+        if (!CheckFileSize())
             continue;
 
-        QFile fileSrc(fiSrc.absoluteFilePath());
+        QFile fileSrc(fiFileSrc.absoluteFilePath());
         QFile fileDest(fileSrc.fileName() + sTmpSuffixName);
         if (!fileSrc.open(QFile::ReadOnly/* | QFile::Text*/)) {  //读模式的文本模式没有影响
             QMessageBox::critical(this, "", tr("打开输入文件错误"));
@@ -182,9 +181,13 @@ void MainWindow::on_pushButton_Start_clicked()
         QTextStream tsSrc(&fileSrc);
         QTextStream tsDest(&fileDest);
         if (ui->comboBox_EncodingSrc->currentIndex() == 0)
-            tsSrc.setCodec(DetectEncoding(fileSrc).toLatin1().data());
-        else
-            tsSrc.setCodec(sCodecSrc.toLatin1().data());
+            sCodecSrc = DetectEncoding(fileSrc);
+        if (ui->checkBox_SkipSameEncoding->isChecked() && sCodecSrc == sCodecDest) {
+            QString sSameCodec = tr("%1\n    的输入输出编码相同，跳过").arg(fiFileSrc.absoluteFilePath());
+            ui->plainTextEdit_Output->appendPlainText(sSameCodec);
+            continue;
+        }
+        tsSrc.setCodec(sCodecSrc.toLatin1().data());
         tsDest.setCodec(sCodecDest.toLatin1().data());
         tsDest.setGenerateByteOrderMark(ui->checkBox_BomDest->isChecked());
         //qDebug()<< tsDest.codec()->name();
@@ -203,7 +206,7 @@ void MainWindow::on_pushButton_Start_clicked()
 
             if (eltUpdateUi.elapsed() >= 500) {
                 eltUpdateUi.restart();
-                float percentage = (double)tsSrc.pos() / fiSrc.size() * 100;
+                float percentage = (double)tsSrc.pos() / fiFileSrc.size() * 100;
                 UpdateProgress(lineNum, percentage);
             }
             if (eltInteractUi.elapsed() >= 50) {
@@ -219,8 +222,11 @@ void MainWindow::on_pushButton_Start_clicked()
         fileSrc.close();
         fileDest.close();
 
-        QFile::remove(fileSrc.fileName() + sBakSuffixName);
-        QFile::rename(fileSrc.fileName(), fileSrc.fileName() + sBakSuffixName);
+        if (ui->checkBox_Bak) {
+            QFile::remove(fileSrc.fileName() + sBakSuffixName);
+            QFile::rename(fileSrc.fileName(), fileSrc.fileName() + sBakSuffixName);
+        } else
+            QFile::remove(fileSrc.fileName());
         QFile::rename(fileSrc.fileName() + sTmpSuffixName, fileSrc.fileName());
     }  // for (int fileIdx = 0;
 }
@@ -246,15 +252,16 @@ void MainWindow::on_comboBox_EncodingDest_currentTextChanged(const QString &arg1
     }
 }
 
-bool MainWindow::CheckFileSize(const QFileInfo &fiSrc)
+bool MainWindow::CheckFileSize()
 {
-    if (fiSrc.size() >= iMaxFileSize) {
-        QMessageBox::information(this, tr("跳过文件"), tr("%1\n的文件大小大于等于%2GB，将跳过").arg(fiSrc.absoluteFilePath()).arg(iMaxFileSizeGB));
+    if (fiFileSrc.size() >= iMaxFileSize) {
+        QString sOverSize = tr("%1\n    的文件大小大于等于%2GB，跳过").arg(fiFileSrc.absoluteFilePath()).arg(iMaxFileSizeGB);
+        ui->plainTextEdit_Output->appendPlainText(sOverSize);
         return false;
     }
 
-    if (fiSrc.size() > iBigFileSize) {
-        int ret = QMessageBox::question(this, tr("超大文件确认"), tr("%1\n的文件大小大于%2MB，仍要进行转换吗？").arg(fiSrc.absoluteFilePath()).arg(iBigFileSizeMB));
+    if (fiFileSrc.size() > iBigFileSize) {
+        int ret = QMessageBox::question(this, tr("超大文件确认"), tr("%1\n的文件大小大于%2MB，仍要进行转换吗？").arg(fiFileSrc.absoluteFilePath()).arg(iBigFileSizeMB));
         if (ret == QMessageBox::No)
             return false;
     }
@@ -272,7 +279,7 @@ void MainWindow::UpdateProgress(int lineNum, float percentage)
     QTextCursor tc = ui->plainTextEdit_Output->textCursor();
     tc.select(QTextCursor::BlockUnderCursor);
     tc.removeSelectedText();
-    QString sOutputLine = tr("%0 （%1行，%2%）").arg(fiSrc.fileName()).arg(lineNum).arg(sPercentage);
+    QString sOutputLine = tr("%0 （%1行，%2%）").arg(fiFileSrc.absoluteFilePath()).arg(lineNum).arg(sPercentage);
     ui->plainTextEdit_Output->appendPlainText(sOutputLine);
 //    ui->plainTextEdit_Output->insertPlainText(sOutputLine);
 }

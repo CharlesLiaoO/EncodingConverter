@@ -19,7 +19,6 @@ public:
 
 private slots:
     void on_pushButton_PathSrcBrowse_clicked();
-    void on_pushButton_PathDestBrowse_clicked();
     void on_pushButton_Start_clicked();
     void on_pushButton_Stop_clicked();
 
@@ -29,9 +28,9 @@ private:
     Ui::MainWindow *ui;
 
     bool bUserStop = false;
-    QFileInfo fiSrc;
+    QFileInfo fiFileSrc;
     QString sIniPath;
-    bool CheckFileSize(const QFileInfo &fiSrc);
+    bool CheckFileSize();
     void UpdateProgress(int lineNum, float percentage);
 
     QString sBakSuffixName;
