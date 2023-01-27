@@ -84,17 +84,23 @@ QFileInfoList GetFileInfoList(const QFileInfo &dirInfo, const QStringList &nameF
     return fileList;
 }
 
-// 参考：CSDN博主「hellokandy」文章：https://blog.csdn.net/hellokandy/article/details/126147776
-QString DetectEncoding(QFile &fileSrc)
+/// 判断文本文件的编码，如果使用 *bUtf8Bom ，则UTF-8 BOM编编只返回"UTF-8"，并设置 *bUtf8Bom 为true
+/// 参考：CSDN博主「hellokandy」文章：https://blog.csdn.net/hellokandy/article/details/126147776
+/// QTextStream的自动检测不能区分utf-8（无bom）与ANSI，因为它_应该_没有读取整个文件读取判断，也没有动态检测编码【Windows测试】
+QString DetectEncoding(QFile &fileSrc, bool *bUtf8Bom=nullptr)
 {
     QString sEncoding;
 
     //读取4字节用于判断bom
     QByteArray buf = fileSrc.read(4);
 
-    if (buf.size() >= 3 && (uchar)buf.at(0) == 0xEF && (uchar)buf.at(1) == 0xBB && (uchar)buf.at(2) == 0xBF)
-        sEncoding = "UTF-8 BOM";
-    else if (buf.size() >= 2 && (uchar)buf.at(0) == 0xFF && (uchar)buf.at(1) == 0xFE)
+    if (buf.size() >= 3 && (uchar)buf.at(0) == 0xEF && (uchar)buf.at(1) == 0xBB && (uchar)buf.at(2) == 0xBF) {
+        if (bUtf8Bom) {
+            sEncoding = "UTF-8";
+            *bUtf8Bom = true;
+        } else
+            sEncoding = "UTF-8 BOM";
+    } else if (buf.size() >= 2 && (uchar)buf.at(0) == 0xFF && (uchar)buf.at(1) == 0xFE)
         sEncoding = "UTF-16LE";
     else if (buf.size() >= 2 && (uchar)buf.at(0) == 0xFE && (uchar)buf.at(1) == 0xFF)
         sEncoding = "UTF-16BE";
@@ -112,8 +118,11 @@ QString DetectEncoding(QFile &fileSrc)
         tc->toUnicode(buf.constData(), buf.size(), &cs);
         if (cs.invalidChars > 0)  //尝试用utf8转换，如果无效字符数大于0，则使用系统编码
             sEncoding = "";  //空为System，适应系统和地区本地编码
-        else
+        else {
             sEncoding = "UTF-8";
+            if (bUtf8Bom)
+                *bUtf8Bom = false;
+        }
     }
 
     fileSrc.seek(0);
@@ -180,16 +189,24 @@ void MainWindow::on_pushButton_Start_clicked()
 
         QTextStream tsSrc(&fileSrc);
         QTextStream tsDest(&fileDest);
-        if (ui->comboBox_EncodingSrc->currentIndex() == 0)
-            sCodecSrc = DetectEncoding(fileSrc);
+
+        bool bUtf8bomSrc = false, bUtf8bomDest;
+        if (ui->comboBox_EncodingSrc->currentIndex() == 0)  //Auto Detect
+            sCodecSrc = DetectEncoding(fileSrc, &bUtf8bomSrc);
+        bUtf8bomDest = ui->checkBox_BomDest->isChecked();
         if (ui->checkBox_SkipSameEncoding->isChecked() && sCodecSrc == sCodecDest) {
-            QString sSameCodec = tr("%1\n    的输入输出编码相同，跳过").arg(fiFileSrc.absoluteFilePath());
-            ui->plainTextEdit_Output->appendPlainText(sSameCodec);
-            continue;
+            bool bSameCodec = true;
+            if (sCodecSrc == "UTF-8" && bUtf8bomSrc != bUtf8bomDest)
+                bSameCodec = false;
+            if (bSameCodec) {
+                QString sSameCodec = tr("%1\n    的输入输出编码相同，跳过").arg(fiFileSrc.absoluteFilePath());
+                ui->plainTextEdit_Output->appendPlainText(sSameCodec);
+                continue;
+            }
         }
         tsSrc.setCodec(sCodecSrc.toLatin1().data());
         tsDest.setCodec(sCodecDest.toLatin1().data());
-        tsDest.setGenerateByteOrderMark(ui->checkBox_BomDest->isChecked());
+        tsDest.setGenerateByteOrderMark(bUtf8bomDest);
         //qDebug()<< tsDest.codec()->name();
 
         if (fileIdx != 0)
@@ -222,7 +239,7 @@ void MainWindow::on_pushButton_Start_clicked()
         fileSrc.close();
         fileDest.close();
 
-        if (ui->checkBox_Bak) {
+        if (ui->checkBox_Bak->isChecked()) {
             QFile::remove(fileSrc.fileName() + sBakSuffixName);
             QFile::rename(fileSrc.fileName(), fileSrc.fileName() + sBakSuffixName);
         } else
