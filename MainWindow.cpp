@@ -12,6 +12,7 @@
 #include <NotPrjRel.h>
 #include <QStandardPaths>
 #include <QElapsedTimer>
+#include <QTime>
 
 int iBigFileSize = 1024*1024*1024;  // 1GiB
 uint iMaxFileSize = (uint)2*1024*1024*1024;  // 2GiB
@@ -135,6 +136,8 @@ void MainWindow::on_pushButton_Start_clicked()
     bUserStop = false;
     ui->label_FileProgress->setText("0/0");
     ui->plainTextEdit_Output->clear();
+    ui->plainTextEdit_Output->appendPlainText(tr("---- 开始于 %1 ----").arg(QTime::currentTime().toString("hh:mm:ss")));
+    QCoreApplication::processEvents();  //显示开始时间，避免转换结果（消息输出）与上一次相同时，用户无法感知响应
 
     QString pathSrc = ui->lineEdit_PathSrc->text();
     QString sCodecSrc = ui->comboBox_EncodingSrc->currentText();
