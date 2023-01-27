@@ -1,7 +1,8 @@
-# Add by me:
+# 自己写的：
 bin/*
+bin_debug/*
 
-# following are get from gitHub:
+#以下是gitHub配置
 
 # C++ objects and libs
 *.slo
