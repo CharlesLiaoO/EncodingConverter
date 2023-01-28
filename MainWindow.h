@@ -18,7 +18,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_PathSrcBrowse_clicked();
+    void on_pushButton_PathInBrowse_clicked();
     void on_pushButton_Start_clicked();
     void on_pushButton_Stop_clicked();
 

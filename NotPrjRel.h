@@ -32,9 +32,6 @@ inline QString StrF(double val) {
 #endif
 }
 
-/// 从QString返回系统默认编码的QByteArray_存储它到上下文变量中，如果要使用它的char*
-QByteArray ToSysDefCodecBa_StIfUseCa(const QString &qStr);
-
 /// 获取文件无后缀（No Suffix）的名字
 QString GetFileNameNS(const QString &path);
 /// 获取文件无后缀（No Suffix）的路径

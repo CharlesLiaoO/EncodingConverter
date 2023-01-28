@@ -77,18 +77,18 @@
     <item row="0" column="0">
      <widget class="QGroupBox" name="groupBox_4">
       <property name="title">
-       <string>文件夹或文件名：</string>
+       <string>文件夹或文件：</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="2">
-        <widget class="QPushButton" name="pushButton_PathSrcBrowse">
+        <widget class="QPushButton" name="pushButton_PathInBrowse">
          <property name="text">
           <string>浏览</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit_PathSrc">
+        <widget class="QLineEdit" name="lineEdit_PathIn">
          <property name="text">
           <string/>
          </property>
@@ -148,7 +148,7 @@
        <item row="1" column="1">
         <widget class="QCheckBox" name="checkBox_Recursively">
          <property name="text">
-          <string>递归包含子目录和文件</string>
+          <string>递归包含子文件夹和文件</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -156,7 +156,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit_PathDest">
+        <widget class="QLineEdit" name="lineEdit_PathOut">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -309,7 +309,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QPlainTextEdit" name="plainTextEdit_Output"/>
+          <widget class="QPlainTextEdit" name="plainTextEdit_MsgOutput"/>
          </item>
         </layout>
        </widget>

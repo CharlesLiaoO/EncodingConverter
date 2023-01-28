@@ -1,14 +1,5 @@
 ﻿#include "NotPrjRel.h"
 
-QByteArray ToSysDefCodecBa_StIfUseCa(const QString &qStr)
-{
-#ifdef Q_OS_LINUX
-    return qStr.toUtf8();
-#else
-    return qStr.toLocal8Bit();
-#endif
-}
-
 IniSetting::IniSetting(const QString &iniFilePath, const QString &groupName, QObject *parent, bool sysFileSync) :
     QSettings(iniFilePath, QSettings::IniFormat, parent)
 {

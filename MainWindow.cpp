@@ -41,13 +41,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     encodingList<< "GB18030";
 
-    ui->comboBox_EncodingDest->addItems(encodingList);
     ui->comboBox_EncodingSrc->addItems(encodingList);
+    ui->comboBox_EncodingDest->addItems(encodingList);
 
     sIniPath = "config.ini";
     IniSetting cfg(sIniPath);
-    QString pathSrcDef = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    ui->lineEdit_PathSrc->setText(cfg.value("pathSrc", pathSrcDef).toString());
+    QString pathInDef = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    ui->lineEdit_PathIn->setText(cfg.value("pathIn", pathInDef).toString());
 
     sBakSuffixName = ".ecbak";
     sTmpSuffixName = ".tmp";
@@ -58,13 +58,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_PathSrcBrowse_clicked()
+void MainWindow::on_pushButton_PathInBrowse_clicked()
 {
-    QString sPathLast = ui->lineEdit_PathSrc->text();
-    QString sDir = QFileDialog::getExistingDirectory(this, tr("选择输入文件夹"), sPathLast);
+    QString sPathInLast = ui->lineEdit_PathIn->text();
+    QString sDir = QFileDialog::getExistingDirectory(this, tr("选择输入文件夹"), sPathInLast);
 //    QString sDir = QFileDialog::getSaveFileName(this, tr("选择输入文件或文件夹"), sPathSrc);  //不支持文件夹
     if (!sDir.isEmpty())
-        ui->lineEdit_PathSrc->setText(sDir);
+        ui->lineEdit_PathIn->setText(sDir);
 }
 
 QFileInfoList GetFileInfoList(const QFileInfo &dirInfo, const QStringList &nameFilters, bool bRecursively, bool &bStop)
@@ -88,12 +88,12 @@ QFileInfoList GetFileInfoList(const QFileInfo &dirInfo, const QStringList &nameF
 /// 判断文本文件的编码，如果使用 *bUtf8Bom ，则UTF-8 BOM编编只返回"UTF-8"，并设置 *bUtf8Bom 为true
 /// 参考：CSDN博主「hellokandy」文章：https://blog.csdn.net/hellokandy/article/details/126147776
 /// QTextStream的自动检测不能区分utf-8（无bom）与ANSI，因为它_应该_没有读取整个文件读取判断，也没有动态检测编码【Windows测试】
-QString DetectEncoding(QFile &fileSrc, bool *bUtf8Bom=nullptr)
+QString DetectEncoding(QFile &file, bool *bUtf8Bom=nullptr)
 {
     QString sEncoding;
 
     //读取4字节用于判断bom
-    QByteArray buf = fileSrc.read(4);
+    QByteArray buf = file.read(4);
 
     if (buf.size() >= 3 && (uchar)buf.at(0) == 0xEF && (uchar)buf.at(1) == 0xBB && (uchar)buf.at(2) == 0xBF) {
         if (bUtf8Bom) {
@@ -114,8 +114,8 @@ QString DetectEncoding(QFile &fileSrc, bool *bUtf8Bom=nullptr)
     else {
         QTextCodec::ConverterState cs;
         QTextCodec* tc = QTextCodec::codecForName("UTF-8");
-        fileSrc.seek(0);
-        buf = fileSrc.readAll();  Q_UNUSED(iMaxFileSize)  //读整个文件判断编码，QByteArray最大容量2GB-1
+        file.seek(0);
+        buf = file.readAll();  Q_UNUSED(iMaxFileSize)  //读整个文件判断编码，QByteArray最大容量2GB-1
         tc->toUnicode(buf.constData(), buf.size(), &cs);
         if (cs.invalidChars > 0)  //尝试用utf8转换，如果无效字符数大于0，则使用系统编码
             sEncoding = "";  //空为System，适应系统和地区本地编码
@@ -126,7 +126,7 @@ QString DetectEncoding(QFile &fileSrc, bool *bUtf8Bom=nullptr)
         }
     }
 
-    fileSrc.seek(0);
+    file.seek(0);
 
     return sEncoding;
 }
@@ -135,13 +135,13 @@ void MainWindow::on_pushButton_Start_clicked()
 {
     bUserStop = false;
     ui->label_FileProgress->setText("0/0");
-    ui->plainTextEdit_Output->clear();
-    ui->plainTextEdit_Output->appendPlainText(tr("---- 开始于 %1 ----").arg(QTime::currentTime().toString("hh:mm:ss")));
+    ui->plainTextEdit_MsgOutput->clear();
+    ui->plainTextEdit_MsgOutput->appendPlainText(tr("---- 开始于 %1 ----").arg(QTime::currentTime().toString("hh:mm:ss")));
     QCoreApplication::processEvents();  //显示开始时间，避免转换结果（消息输出）与上一次相同时，用户无法感知响应
 
-    QString pathSrc = ui->lineEdit_PathSrc->text();
-    QString sCodecSrc = ui->comboBox_EncodingSrc->currentText();
-    QString sCodecDest = ui->comboBox_EncodingDest->currentText();
+    QString pathIn = ui->lineEdit_PathIn->text();
+    QString sEncodingSrc = ui->comboBox_EncodingSrc->currentText();
+    QString sEncodingDest = ui->comboBox_EncodingDest->currentText();
 
     QString sNewLine = ui->comboBox_NewLineDest->currentText();
     if (sNewLine == "CRLF")
@@ -151,31 +151,31 @@ void MainWindow::on_pushButton_Start_clicked()
     else if (sNewLine == "LF")
         sNewLine = "\n";
 
-    if (!QFileInfo::exists(pathSrc)) {
+    if (!QFileInfo::exists(pathIn)) {
         QMessageBox::information(this, "", tr("输入路径不存在或非法"));
         return;
     }
 
     IniSetting cfg(sIniPath);
-    cfg.setValue("pathSrc", pathSrc);
+    cfg.setValue("pathIn", pathIn);
 
-    QFileInfo fiInput(pathSrc);
-    QFileInfoList fiList;
-    if (fiInput.isDir()) {
+    QFileInfo fiPathIn(pathIn);
+    QFileInfoList fiFileSrcList;
+    if (fiPathIn.isDir()) {
         QString sSuffixNames = ui->plainTextEdit_SuffixName->toPlainText();
         QStringList nameFilters = sSuffixNames.split(";");
         bool Recursively = ui->checkBox_Recursively->isChecked();
         if (Recursively)
-            ui->plainTextEdit_Output->appendPlainText(tr("正在递归查找所有文件..."));
-        fiList = GetFileInfoList(fiInput, nameFilters, ui->checkBox_Recursively->isChecked(), bUserStop);
-    } else if (fiInput.isFile())
-        fiList<< pathSrc;
+            ui->plainTextEdit_MsgOutput->appendPlainText(tr("正在递归查找所有文件..."));
+        fiFileSrcList = GetFileInfoList(fiPathIn, nameFilters, ui->checkBox_Recursively->isChecked(), bUserStop);
+    } else if (fiPathIn.isFile())
+        fiFileSrcList<< pathIn;
 
     // do!
-    for (int fileIdx = 0; fileIdx < fiList.size() && !bUserStop; fileIdx++) {
-        ui->label_FileProgress->setText(QString("%1/%2").arg(fileIdx + 1).arg(fiList.size()));
+    for (int fileIdx = 0; fileIdx < fiFileSrcList.size() && !bUserStop; fileIdx++) {
+        ui->label_FileProgress->setText(QString("%1/%2").arg(fileIdx + 1).arg(fiFileSrcList.size()));
 
-        fiFileSrc = fiList.at(fileIdx);
+        fiFileSrc = fiFileSrcList.at(fileIdx);
         if (!CheckFileSize())
             continue;
 
@@ -195,25 +195,25 @@ void MainWindow::on_pushButton_Start_clicked()
 
         bool bUtf8bomSrc = false, bUtf8bomDest;
         if (ui->comboBox_EncodingSrc->currentIndex() == 0)  //Auto Detect
-            sCodecSrc = DetectEncoding(fileSrc, &bUtf8bomSrc);
+            sEncodingSrc = DetectEncoding(fileSrc, &bUtf8bomSrc);
         bUtf8bomDest = ui->checkBox_BomDest->isChecked();
-        if (ui->checkBox_SkipSameEncoding->isChecked() && sCodecSrc == sCodecDest) {
+        if (ui->checkBox_SkipSameEncoding->isChecked() && sEncodingSrc == sEncodingDest) {
             bool bSameCodec = true;
-            if (sCodecSrc == "UTF-8" && bUtf8bomSrc != bUtf8bomDest)
+            if (sEncodingSrc == "UTF-8" && bUtf8bomSrc != bUtf8bomDest)
                 bSameCodec = false;
             if (bSameCodec) {
                 QString sSameCodec = tr("%1\n    的输入输出编码相同，跳过").arg(fiFileSrc.absoluteFilePath());
-                ui->plainTextEdit_Output->appendPlainText(sSameCodec);
+                ui->plainTextEdit_MsgOutput->appendPlainText(sSameCodec);
                 continue;
             }
         }
-        tsSrc.setCodec(sCodecSrc.toLatin1().data());
-        tsDest.setCodec(sCodecDest.toLatin1().data());
+        tsSrc.setCodec(sEncodingSrc.toLatin1().data());
+        tsDest.setCodec(sEncodingDest.toLatin1().data());
         tsDest.setGenerateByteOrderMark(bUtf8bomDest);
         //qDebug()<< tsDest.codec()->name();
 
         if (fileIdx != 0)
-            ui->plainTextEdit_Output->insertPlainText("\n");
+            ui->plainTextEdit_MsgOutput->insertPlainText("\n");
 
         int lineNum = 1;
         QElapsedTimer eltUpdateUi, eltInteractUi;
@@ -276,7 +276,7 @@ bool MainWindow::CheckFileSize()
 {
     if (fiFileSrc.size() >= iMaxFileSize) {
         QString sOverSize = tr("%1\n    的文件大小大于等于%2GB，跳过").arg(fiFileSrc.absoluteFilePath()).arg(iMaxFileSizeGB);
-        ui->plainTextEdit_Output->appendPlainText(sOverSize);
+        ui->plainTextEdit_MsgOutput->appendPlainText(sOverSize);
         return false;
     }
 
@@ -296,11 +296,11 @@ void MainWindow::UpdateProgress(int lineNum, float percentage)
     else
         sPercentage = "100";
 
-    QTextCursor tc = ui->plainTextEdit_Output->textCursor();
+    QTextCursor tc = ui->plainTextEdit_MsgOutput->textCursor();
     tc.select(QTextCursor::BlockUnderCursor);
     tc.removeSelectedText();
     QString sOutputLine = tr("%0 （%1行，%2%）").arg(fiFileSrc.absoluteFilePath()).arg(lineNum).arg(sPercentage);
-    ui->plainTextEdit_Output->appendPlainText(sOutputLine);
-//    ui->plainTextEdit_Output->insertPlainText(sOutputLine);
+    ui->plainTextEdit_MsgOutput->appendPlainText(sOutputLine);
+//    ui->plainTextEdit_MsgOutput->insertPlainText(sOutputLine);
 }
 
