@@ -167,12 +167,14 @@ void MainWindow::on_pushButton_Start_clicked()
         bool Recursively = ui->checkBox_Recursively->isChecked();
         if (Recursively)
             ui->plainTextEdit_MsgOutput->appendPlainText(tr("正在递归查找所有文件..."));
-        fiFileSrcList = GetFileInfoList(fiPathIn, nameFilters, ui->checkBox_Recursively->isChecked(), bUserStop);
+        fiFileSrcList = GetFileInfoList(fiPathIn, nameFilters, Recursively, bUserStop);
+        if (Recursively)
+            ui->plainTextEdit_MsgOutput->appendPlainText(tr("开始转换文件..."));
     } else if (fiPathIn.isFile())
         fiFileSrcList<< pathIn;
 
     // do!
-    for (int fileIdx = 0; fileIdx < fiFileSrcList.size() && !bUserStop; fileIdx++) {
+    for (int fileIdx = 0/*, dealedFileNum = 0*/; fileIdx < fiFileSrcList.size() && !bUserStop; fileIdx++) {
         ui->label_FileProgress->setText(QString("%1/%2").arg(fileIdx + 1).arg(fiFileSrcList.size()));
 
         fiFileSrc = fiFileSrcList.at(fileIdx);
@@ -212,8 +214,9 @@ void MainWindow::on_pushButton_Start_clicked()
         tsDest.setGenerateByteOrderMark(bUtf8bomDest);
         //qDebug()<< tsDest.codec()->name();
 
-        if (fileIdx != 0)
-            ui->plainTextEdit_MsgOutput->insertPlainText("\n");
+//        if (dealedFileNum != 0)
+            ui->plainTextEdit_MsgOutput->appendPlainText("");
+//        dealedFileNum++;
 
         int lineNum = 1;
         QElapsedTimer eltUpdateUi, eltInteractUi;
@@ -250,6 +253,8 @@ void MainWindow::on_pushButton_Start_clicked()
             QFile::remove(fileSrc.fileName());
         QFile::rename(fileSrc.fileName() + sTmpSuffixName, fileSrc.fileName());
     }  // for (int fileIdx = 0;
+
+    ui->plainTextEdit_MsgOutput->appendPlainText(tr("---- 完成于 %1 ----").arg(QTime::currentTime().toString("hh:mm:ss")));
 }
 
 void MainWindow::on_pushButton_Stop_clicked()
@@ -304,10 +309,11 @@ void MainWindow::UpdateProgress(int lineNum, float percentage)
         sPercentage = "100";
 
     QTextCursor tc = ui->plainTextEdit_MsgOutput->textCursor();
+    tc.movePosition(QTextCursor::End);  // ensure select end of doc
     tc.select(QTextCursor::BlockUnderCursor);
+//    QString str = tc.selectedText();
     tc.removeSelectedText();
     QString sOutputLine = tr("%0 （%1行，%2%）").arg(fiFileSrc.absoluteFilePath()).arg(lineNum).arg(sPercentage);
     ui->plainTextEdit_MsgOutput->appendPlainText(sOutputLine);
-//    ui->plainTextEdit_MsgOutput->insertPlainText(sOutputLine);
 }
 
