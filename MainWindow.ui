@@ -300,6 +300,13 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QToolButton" name="toolButton_About">
+          <property name="text">
+           <string notr="true"/>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -340,16 +347,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>18</height>
-    </rect>
-   </property>
   </widget>
  </widget>
  <resources/>

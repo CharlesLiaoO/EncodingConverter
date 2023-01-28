@@ -25,6 +25,8 @@ private slots:
     void on_comboBox_EncodingDest_currentTextChanged(const QString &arg1);
     void closeEvent(QCloseEvent *e);
 
+    void on_toolButton_About_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->toolButton_About->setIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation));
 
     iBigFileSizeMB = (double)iBigFileSize / (1024*1024);
     iMaxFileSizeGB = (double)iMaxFileSize / (1024*1024*1024);
@@ -315,5 +316,12 @@ void MainWindow::UpdateProgress(int lineNum, float percentage)
     tc.removeSelectedText();
     QString sOutputLine = tr("%0 （%1行，%2%）").arg(fiFileSrc.absoluteFilePath()).arg(lineNum).arg(sPercentage);
     ui->plainTextEdit_MsgOutput->appendPlainText(sOutputLine);
+}
+
+#include <AboutDlg.h>
+void MainWindow::on_toolButton_About_clicked()
+{
+    AboutDlg aboutDlg(this);
+    aboutDlg.exec();
 }
 
