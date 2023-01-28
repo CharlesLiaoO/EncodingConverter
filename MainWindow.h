@@ -23,6 +23,7 @@ private slots:
     void on_pushButton_Stop_clicked();
 
     void on_comboBox_EncodingDest_currentTextChanged(const QString &arg1);
+    void closeEvent(QCloseEvent *e);
 
 private:
     Ui::MainWindow *ui;

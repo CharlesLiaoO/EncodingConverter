@@ -223,6 +223,7 @@ void MainWindow::on_pushButton_Start_clicked()
         for (; !tsSrc.atEnd() && !bUserStop; lineNum++) {
             QString sLine = tsSrc.readLine();
             tsDest<< sLine + sNewLine;
+//            QThread::msleep(100);
 
             if (eltUpdateUi.elapsed() >= 500) {
                 eltUpdateUi.restart();
@@ -270,6 +271,12 @@ void MainWindow::on_comboBox_EncodingDest_currentTextChanged(const QString &arg1
         ui->checkBox_BomDest->setEnabled(false);
         ui->checkBox_BomDest->setChecked(false);
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+    bUserStop = true;
+    Q_UNUSED(e)
 }
 
 bool MainWindow::CheckFileSize()
