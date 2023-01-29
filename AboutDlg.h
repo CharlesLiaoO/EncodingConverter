@@ -17,8 +17,7 @@ public:
 
 private slots:
     void on_toolButton_AboutQt_clicked();
-
-    void on_pushButton_Ok_clicked();
+    void on_buttonBox_accepted();
 
 private:
     Ui::AboutDlg *ui;

@@ -20,7 +20,7 @@ void AboutDlg::on_toolButton_AboutQt_clicked()
     QMessageBox::aboutQt(this);
 }
 
-void AboutDlg::on_pushButton_Ok_clicked()
+void AboutDlg::on_buttonBox_accepted()
 {
     accept();
 }

@@ -11,20 +11,20 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>文本编码转换器</string>
+   <string>Encoding Converter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0,0,1" columnstretch="1,0">
     <item row="1" column="0">
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>编码：</string>
+       <string>Encoding</string>
       </property>
       <layout class="QFormLayout" name="formLayout_2">
        <item row="0" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>输入：</string>
+          <string>In:</string>
          </property>
         </widget>
        </item>
@@ -32,7 +32,7 @@
         <widget class="QComboBox" name="comboBox_EncodingSrc">
          <item>
           <property name="text">
-           <string>自动检测（支持检测UTF和系统编码）</string>
+           <string>Auto detect (Support to detect UTF and System encoding)</string>
           </property>
          </item>
         </widget>
@@ -40,7 +40,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>输出：</string>
+          <string>Out:</string>
          </property>
         </widget>
        </item>
@@ -52,7 +52,7 @@
          <item>
           <widget class="QCheckBox" name="checkBox_BomDest">
            <property name="text">
-            <string>BOM</string>
+            <string notr="true">BOM</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -64,7 +64,7 @@
        <item row="2" column="1">
         <widget class="QCheckBox" name="checkBox_SkipSameEncoding">
          <property name="text">
-          <string>输入输出相同编码时跳过</string>
+          <string>Skip when input encoding is same as output</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -77,13 +77,13 @@
     <item row="0" column="0">
      <widget class="QGroupBox" name="groupBox_4">
       <property name="title">
-       <string>文件夹或文件：</string>
+       <string>Directory or file</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="2">
         <widget class="QPushButton" name="pushButton_PathInBrowse">
          <property name="text">
-          <string>浏览</string>
+          <string>Browse</string>
          </property>
         </widget>
        </item>
@@ -97,7 +97,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>输入：</string>
+          <string>In:</string>
          </property>
         </widget>
        </item>
@@ -112,14 +112,7 @@
          <item>
           <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>如果备份，则在同级目录复制输入文件X为X.</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>ecbak</string>
+            <string>If backup, copy file X as X.ecbak in same directory</string>
            </property>
           </widget>
          </item>
@@ -141,14 +134,14 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>输出：</string>
+          <string>Out:</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
         <widget class="QCheckBox" name="checkBox_Recursively">
          <property name="text">
-          <string>递归包含子文件夹和文件</string>
+          <string>Recursively include sub directoy and file</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -161,14 +154,14 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>覆盖输入文件</string>
+          <string>Overwrite inputs</string>
          </property>
         </widget>
        </item>
        <item row="2" column="2">
         <widget class="QCheckBox" name="checkBox_Bak">
          <property name="text">
-          <string>备份</string>
+          <string>Backup</string>
          </property>
         </widget>
        </item>
@@ -178,7 +171,7 @@
     <item row="0" column="1">
      <widget class="QGroupBox" name="groupBox_5">
       <property name="title">
-       <string>文件拓展名：</string>
+       <string>Suffix Name</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -200,20 +193,20 @@
     <item row="1" column="1">
      <widget class="QGroupBox" name="groupBox_2">
       <property name="title">
-       <string>换行：</string>
+       <string>New Line</string>
       </property>
       <layout class="QFormLayout" name="formLayout_3">
        <item row="0" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>输入：</string>
+          <string>In:</string>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>输出：</string>
+          <string>Out:</string>
          </property>
         </widget>
        </item>
@@ -221,7 +214,7 @@
         <widget class="QComboBox" name="comboBox_NewLineSrc">
          <item>
           <property name="text">
-           <string>任意</string>
+           <string>Any</string>
           </property>
          </item>
         </widget>
@@ -230,17 +223,17 @@
         <widget class="QComboBox" name="comboBox_NewLineDest">
          <item>
           <property name="text">
-           <string>CRLF</string>
+           <string notr="true">CRLF</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>LF</string>
+           <string notr="true">LF</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>CR</string>
+           <string notr="true">CR</string>
           </property>
          </item>
         </widget>
@@ -255,14 +248,14 @@
         <item>
          <widget class="QPushButton" name="pushButton_Start">
           <property name="text">
-           <string>开始</string>
+           <string>Start</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_Stop">
           <property name="text">
-           <string>停止</string>
+           <string>Stop</string>
           </property>
          </widget>
         </item>
@@ -274,7 +267,7 @@
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>文件：</string>
+             <string>File: </string>
             </property>
            </widget>
           </item>
@@ -312,7 +305,7 @@
       <item>
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
-         <string>消息输出：</string>
+         <string>Message output</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
