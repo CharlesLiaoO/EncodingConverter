@@ -9,18 +9,21 @@
 // 与项目无关的一些API
 
 
+/// Convert a number to string, keep 3 decimal places
 /// 将数值转成字串（保留3位小数）
 inline QString StrF3(double val) {
     return QString::number(val, 'f', 3);
 }
 
+/// Convert a number to string, keep least decimal places
 /// 将数值转成字串（保留最少位小数）
 inline QString StrF(double val) {
 #if QT_VERSION >= 0x050700
     return QString::number(val, 'f', QLocale::FloatingPointShortest);
 #else
-    //QLocale::FloatingPointShortest的qt实现复杂，不参考
-    //始终填充prec个小数位，>6可能包含不精确的，虽然有办法去除，但应用不应该使用多于6个小数位的数据，人难读
+    // QLocale::FloatingPointShortest的qt实现复杂，不参考
+    // When QString::number()'s arg prec > 6, result may not accurate. Athough there's some way to avoid the not accurate result, this function should not be used in scenes with too many decimal places that are difficult to read
+    // 当QString::number()的参数prec > 6时，结果可能不精确。虽然有办法避免不精确的结果，但这个函数不应该用在人难读的太多位小数的场景中
     QString tmp = QString::number(val, 'f'/*, 16*/);
     if (tmp.contains('.')) {
         while (tmp.endsWith('0'))
@@ -32,19 +35,23 @@ inline QString StrF(double val) {
 #endif
 }
 
+/// Get file name with No Suffix
 /// 获取文件无后缀（No Suffix）的名字
 QString GetFileNameNS(const QString &path);
+/// Get file path with No Suffix
 /// 获取文件无后缀（No Suffix）的路径
 QString GetFilePathNS(const QString &path);
-/// 获取路径的后缀
+/// Get file suffix
+/// 获取文件的后缀
 QString GetFileSuffix(const QString &path);
 
 
-/// 便利的Ini格式QSettings。在构造函数中支持组名，使用utf8编码
+/// A convenient QSettings of ini fomart. Support group arg in constructor, use utf8 econding
+/// 便利的Ini格式的QSettings。在构造函数中支持组名，使用utf8编码
 class IniSetting : public QSettings
 {
 public:
-    /// 参数 sysFileSync: unix是否需要sync命令同步此文件
+    /// \a sysFileSync: whether to call the system call sync() in destructor on unix system
     IniSetting(const QString &iniFilePath, const QString &groupName="", QObject *parent=nullptr, bool sysFileSync=true);
     ~IniSetting();
 private:

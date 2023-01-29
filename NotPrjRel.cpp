@@ -12,7 +12,7 @@ IniSetting::IniSetting(const QString &iniFilePath, const QString &groupName, QOb
 
 IniSetting::~IniSetting()
 {
-    sync();  //QSetting析构再次调用不会影响性能，因为sync内部有“是否有新修改”的标识
+    sync();  // Another sync() call in QSetting's destructor will not do actual work, because there's a IfChanged flag in sync()
 #ifdef Q_OS_UNIX
     if (sysFileSync)
         system(QString("sync -d %1").arg(iniFilePath).toStdString().c_str());
