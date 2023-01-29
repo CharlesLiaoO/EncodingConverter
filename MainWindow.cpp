@@ -325,3 +325,10 @@ void MainWindow::on_toolButton_About_clicked()
     AboutDlg aboutDlg(this);
     aboutDlg.exec();
 }
+
+#include <SettingDlg.h>
+void MainWindow::on_toolButton_Setting_clicked()
+{
+    SettingDlg settingDlg(this);
+    settingDlg.exec();
+}

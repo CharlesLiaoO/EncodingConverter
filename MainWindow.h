@@ -26,6 +26,7 @@ private slots:
     void closeEvent(QCloseEvent *e);
 
     void on_toolButton_About_clicked();
+    void on_toolButton_Setting_clicked();
 
 private:
     Ui::MainWindow *ui;

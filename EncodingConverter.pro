@@ -19,14 +19,20 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 SOURCES += \
     AboutDlg.cpp \
     NotPrjRel.cpp \
+    SettingDlg.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
     AboutDlg.h \
     MainWindow.h \
-    NotPrjRel.h
+    NotPrjRel.h \
+    SettingDlg.h
 
 FORMS += \
     AboutDlg.ui \
-    MainWindow.ui
+    MainWindow.ui \
+    SettingDlg.ui
+
+RESOURCES += \
+    Res/res.qrc

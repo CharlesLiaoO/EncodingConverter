@@ -294,6 +294,17 @@
          </spacer>
         </item>
         <item>
+         <widget class="QToolButton" name="toolButton_Setting">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Res/res.qrc">
+            <normaloff>:/images/setting.png</normaloff>:/images/setting.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="toolButton_About">
           <property name="text">
            <string notr="true"/>
@@ -342,6 +353,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="Res/res.qrc"/>
+ </resources>
  <connections/>
 </ui>
