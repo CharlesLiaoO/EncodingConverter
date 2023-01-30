@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>820</width>
     <height>500</height>
    </rect>
   </property>
@@ -30,6 +30,9 @@
        </item>
        <item row="0" column="1">
         <widget class="QComboBox" name="comboBox_EncodingSrc">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+         </property>
          <item>
           <property name="text">
            <string>Auto detect (Support UTF and System encoding)</string>
@@ -47,7 +50,11 @@
        <item row="1" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
          <item>
-          <widget class="QComboBox" name="comboBox_EncodingDest"/>
+          <widget class="QComboBox" name="comboBox_EncodingDest">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="checkBox_BomDest">

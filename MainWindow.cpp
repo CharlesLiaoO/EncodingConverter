@@ -76,11 +76,22 @@ MainWindow::MainWindow(QWidget *parent)
         qtAvaEcs.removeOne(top); }
     encodingList += qtAvaEcs;
 
+    ui->comboBox_EncodingSrc->blockSignals(true);
+    ui->comboBox_EncodingDest->blockSignals(true);
+    QFontMetrics fm = fontMetrics();
+    int cbboxMaxWidth = 0;
     for (auto &ec: encodingList) {
         QStringList aliases = ec.split(" / ");
         ui->comboBox_EncodingSrc->addItem(ec, aliases.first());
         ui->comboBox_EncodingDest->addItem(ec, aliases.first());
+        int tmp = fm.width(ec + "   ");  // 3 space to distinguish with " / "
+        if (tmp > cbboxMaxWidth)
+            cbboxMaxWidth = tmp;
     }
+    ui->comboBox_EncodingSrc->blockSignals(false);
+    ui->comboBox_EncodingDest->blockSignals(false);
+    ui->comboBox_EncodingSrc->view()->setFixedWidth(cbboxMaxWidth + 20);  // 20: scroll bar width
+    ui->comboBox_EncodingDest->view()->setFixedWidth(cbboxMaxWidth + 20);
 
     sIniPath = "config.ini";
     IniSetting cfg(sIniPath);
