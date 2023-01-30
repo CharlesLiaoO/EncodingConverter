@@ -12,6 +12,6 @@ Support:
 - 换行符转换
 - 界面语言：简体中文和英文
 
-# Others:
+# Other
 - Build with Qt/C++
 - Other keywords: encode, codec, linefeed, line break
