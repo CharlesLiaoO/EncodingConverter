@@ -32,7 +32,7 @@
         <widget class="QComboBox" name="comboBox_EncodingSrc">
          <item>
           <property name="text">
-           <string>Auto detect (Support to detect UTF and System encoding)</string>
+           <string>Auto detect (Support UTF and System encoding)</string>
           </property>
          </item>
         </widget>
@@ -299,7 +299,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="Res/res.qrc">
+           <iconset>
             <normaloff>:/images/setting.png</normaloff>:/images/setting.png</iconset>
           </property>
          </widget>
@@ -353,8 +353,6 @@
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="Res/res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

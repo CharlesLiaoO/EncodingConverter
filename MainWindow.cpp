@@ -19,6 +19,33 @@ uint iMaxFileSize = (uint)2*1024*1024*1024;  // 2GiB
 int iBigFileSizeMB;
 int iMaxFileSizeGB;
 
+/// Ref: QtCreator's source code - qt-creator/src/plugins/texteditor/codecchooser.cpp
+QStringList AvailableEncodingsWithAliases()
+{
+    QStringList ret;
+
+    QList<int> mibs = QTextCodec::availableMibs();
+    std::sort(mibs.begin(), mibs.end());
+    QList<int>::iterator firstNonNegative =
+        std::find_if(mibs.begin(), mibs.end(), [](int n) { return n >=0; });
+    if (firstNonNegative != mibs.end())
+        std::rotate(mibs.begin(), firstNonNegative, mibs.end());
+    for (int &mib : mibs) {
+//        if (filter == Filter::SingleByte && !isSingleByte(mib))
+//            continue;
+        if (QTextCodec *codec = QTextCodec::codecForMib(mib)) {
+            QString compoundName = QLatin1String(codec->name());
+            const QList<QByteArray> aliases = codec->aliases();
+            for (const QByteArray &alias : aliases) {
+                compoundName += QLatin1String(" / ");
+                compoundName += QString::fromLatin1(alias);
+            }
+            ret<< compoundName;
+        }
+    }
+    return ret;
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -37,13 +64,23 @@ MainWindow::MainWindow(QWidget *parent)
 //    encodingList<< "UTF-32";
     encodingList<< "UTF-32BE";
     encodingList<< "UTF-32LE";
-
     encodingList<< tr("System(ANSI in Windows)");
+//    encodingList<< "GB18030";
 
-    encodingList<< "GB18030";
+//    qDebug()<< QTextCodec::availableCodecs();
+    QStringList qtAvaEcs = AvailableEncodingsWithAliases();  // with aliases
+    qtAvaEcs.removeOne("System");
+    qtAvaEcs.removeOne("UTF-16");
+    qtAvaEcs.removeOne("UTF-32");
+    for (auto &top: encodingList) {
+        qtAvaEcs.removeOne(top); }
+    encodingList += qtAvaEcs;
 
-    ui->comboBox_EncodingSrc->addItems(encodingList);
-    ui->comboBox_EncodingDest->addItems(encodingList);
+    for (auto &ec: encodingList) {
+        QStringList aliases = ec.split(" / ");
+        ui->comboBox_EncodingSrc->addItem(ec, aliases.first());
+        ui->comboBox_EncodingDest->addItem(ec, aliases.first());
+    }
 
     sIniPath = "config.ini";
     IniSetting cfg(sIniPath);
@@ -143,8 +180,8 @@ void MainWindow::on_pushButton_Start_clicked()
     QCoreApplication::processEvents();
 
     QString pathIn = ui->lineEdit_PathIn->text();
-    QString sEncodingSrc = ui->comboBox_EncodingSrc->currentText();
-    QString sEncodingDest = ui->comboBox_EncodingDest->currentText();
+    QString sEncodingSrc = ui->comboBox_EncodingSrc->currentData().toString();
+    QString sEncodingDest = ui->comboBox_EncodingDest->currentData().toString();
 
     QString sNewLine = ui->comboBox_NewLineDest->currentText();
     if (sNewLine == "CRLF")
