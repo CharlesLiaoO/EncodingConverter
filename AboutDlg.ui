@@ -17,7 +17,7 @@
    <item>
     <widget class="QPlainTextEdit" name="plainTextEdit">
      <property name="plainText">
-      <string>Email: LiaoChengO@qq.com
+      <string notr="true">Email: LiaoChengO@qq.com
 https://github.com/CharlesLiaoO/EncodingConverter
 Build with Qt/C++</string>
      </property>
@@ -31,7 +31,7 @@ Build with Qt/C++</string>
      <item>
       <widget class="QToolButton" name="toolButton_AboutQt">
        <property name="text">
-        <string>About Qt</string>
+        <string notr="true">About Qt</string>
        </property>
       </widget>
      </item>

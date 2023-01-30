@@ -20,7 +20,7 @@ SettingDlg::SettingDlg(QWidget *parent) :
 //    langList<< "English";
 //    ui->comboBox_Lang->addItems(langList);
 
-    ui->comboBox_Lang->addItem(tr("System(系统)"), "System");
+    ui->comboBox_Lang->addItem(tr("System"), "System");
     ui->comboBox_Lang->addItem("Chinese(中文)", "Chinese");
     ui->comboBox_Lang->addItem("English", "English");
 

@@ -235,11 +235,15 @@ void MainWindow::on_pushButton_Start_clicked()
         QFile fileSrc(fiFileSrc.absoluteFilePath());
         QFile fileDest(fileSrc.fileName() + sTmpSuffixName);
         if (!fileSrc.open(QFile::ReadOnly/* | QFile::Text*/)) {  // Text mode has no effect in read mode
-            QMessageBox::critical(this, "", tr("Error when open input file"));
+            QString sOpenErr = tr("Error when open input file\n%1").arg(fileSrc.fileName());
+            ui->plainTextEdit_MsgOutput->appendPlainText(sOpenErr);
+            QMessageBox::critical(this, "", sOpenErr);
             return;
         }
         if (!fileDest.open(QFile::WriteOnly)) {  // Not use Text mode, because we need to specify newline char
-            QMessageBox::critical(this, "", tr("Error when open tmp output file"));
+            QString sOpenErr = tr("Error when open temporary output file\n%1").arg(fileDest.fileName());
+            ui->plainTextEdit_MsgOutput->appendPlainText(sOpenErr);
+            QMessageBox::critical(this, "", sOpenErr);
             return;
         }
 

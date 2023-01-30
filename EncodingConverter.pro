@@ -36,3 +36,5 @@ FORMS += \
 
 RESOURCES += \
     Res/res.qrc
+
+TRANSLATIONS += Res/translations/zh_CN.ts

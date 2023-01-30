@@ -5,31 +5,33 @@
 #include <NotPrjRel.h>
 #include <QLocale>
 
-void LoadQtTranslation(QTranslator &tr_qt, QLocale::Language lang);
+QTranslator trQt, trApp;
+void LoadTranslator(QLocale::Language lang);
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QTranslator tr_qt;
     IniSetting cfg("config.ini");
     QString sLanguage = cfg.value("language", "System").toString();
     if (sLanguage == "System")
-        LoadQtTranslation(tr_qt, QLocale().language());
+        LoadTranslator(QLocale().language());
     else if (sLanguage == "Chinese")
-        LoadQtTranslation(tr_qt, QLocale::Chinese);
-    a.installTranslator(&tr_qt);
+        LoadTranslator(QLocale::Chinese);
+    a.installTranslator(&trQt);
+    a.installTranslator(&trApp);
 
     MainWindow w;
     w.show();
     return a.exec();
 }
 
-void LoadQtTranslation(QTranslator &tr_qt, QLocale::Language lang)
+void LoadTranslator(QLocale::Language lang)
 {
     switch (lang) {
     case QLocale::Chinese:
-        tr_qt.load(":/translations/qtMod_zh_CN.qm");  // modified from qt office release
+        trQt.load(":/translations/qtMod_zh_CN.qm");  // modified from qt office release
+        trApp.load(":/translations/zh_CN.qm");
         break;
     default:
         break;

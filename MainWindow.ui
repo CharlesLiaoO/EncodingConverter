@@ -190,7 +190,7 @@
           </size>
          </property>
          <property name="plainText">
-          <string>*.cpp;*.h;*.c;*.hpp</string>
+          <string notr="true">*.cpp;*.h;*.c;*.hpp</string>
          </property>
         </widget>
        </item>
