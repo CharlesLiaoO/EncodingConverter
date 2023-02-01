@@ -13,6 +13,7 @@
 #include <QStandardPaths>
 #include <QElapsedTimer>
 #include <QTime>
+#include <QAbstractItemView>  //comboBox->view() qt5.12.12 msvc2017 need
 
 int iBigFileSize = 1024*1024*1024;  // 1GiB
 uint iMaxFileSize = (uint)2*1024*1024*1024;  // 2GiB
