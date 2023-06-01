@@ -111,80 +111,80 @@
         <translation>消息输出</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="67"/>
+        <location filename="../../MainWindow.cpp" line="68"/>
         <source>System(ANSI in Windows)</source>
         <translation>系统（Windows中为ANSI）</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="113"/>
+        <location filename="../../MainWindow.cpp" line="114"/>
         <source>Choose a directory</source>
         <translation>选择一个目录</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="190"/>
+        <location filename="../../MainWindow.cpp" line="191"/>
         <source>---- Started at %1 ----</source>
         <translation>---- 开始于 %1 ----</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="206"/>
+        <location filename="../../MainWindow.cpp" line="207"/>
         <source>Not existing or invalid path</source>
         <translation>不存在或非法的路径</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="220"/>
+        <location filename="../../MainWindow.cpp" line="221"/>
         <source>Finding files recursively...</source>
         <translation>正在递归查找文件...</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="223"/>
+        <location filename="../../MainWindow.cpp" line="224"/>
         <source>Start to convert...</source>
         <translation>开始转换...</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="238"/>
+        <location filename="../../MainWindow.cpp" line="239"/>
         <source>Error when open input file
 %1</source>
         <translation>错误：打开输入文件：\n%1</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="244"/>
+        <location filename="../../MainWindow.cpp" line="245"/>
         <source>Error when open temporary output file
 %1</source>
         <translation>错误：打开临时输出文件：\n%1</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="262"/>
+        <location filename="../../MainWindow.cpp" line="263"/>
         <source>%1
     &apos;s input encoding is same as output, skip</source>
         <translation>%1
     的输入编码与输出相同，跳过</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="312"/>
+        <location filename="../../MainWindow.cpp" line="313"/>
         <source>---- Finished at %1 ----</source>
         <translation>---- 完成于 %1 ----</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="344"/>
+        <location filename="../../MainWindow.cpp" line="345"/>
         <source>%1
     &apos;s size is &gt;= %2GB, skip</source>
         <translation>%1
     的大小 &gt;= %2GB，跳过</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="350"/>
+        <location filename="../../MainWindow.cpp" line="351"/>
         <source>Big file comfirmation</source>
         <translation>大文件确认</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="350"/>
+        <location filename="../../MainWindow.cpp" line="351"/>
         <source>%1
 &apos;s size &gt; %2MB, still to convert?</source>
         <translation>%1
 &apos;的大小 &gt; %2MB，仍要转换吗？</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="370"/>
+        <location filename="../../MainWindow.cpp" line="371"/>
         <source>%0 (%1 lines, %2%)</source>
         <translation>%0 (%1 行, %2%)</translation>
     </message>

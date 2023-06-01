@@ -1,4 +1,4 @@
-#include "SettingDlg.h"
+﻿#include "SettingDlg.h"
 #include "ui_SettingDlg.h"
 
 #include <NotPrjRel.h>
@@ -21,7 +21,7 @@ SettingDlg::SettingDlg(QWidget *parent) :
 //    ui->comboBox_Lang->addItems(langList);
 
     ui->comboBox_Lang->addItem(tr("System"), "System");
-    ui->comboBox_Lang->addItem("Chinese(中文)", "Chinese");
+    ui->comboBox_Lang->addItem("Simplified Chinese (简体中文)", "SimplifiedChinese");
     ui->comboBox_Lang->addItem("English", "English");
 
     IniSetting cfg("config.ini");
